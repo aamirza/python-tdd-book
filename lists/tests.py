@@ -8,7 +8,6 @@ from lists.views import home_page
 
 class HomePageTest(TestCase):
     def test_home_page_returns_correct_html(self):
-        # TODO: Code smell, POST test is too long?
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
