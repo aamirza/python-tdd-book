@@ -1,39 +1,9 @@
-import os
-import time
-
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
 import unittest
 
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.keys import Keys
-
-MAX_WAIT = 10
+from .base import FunctionalTest
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
-    def setUp(self) -> None:
-        self.browser = webdriver.Firefox()
-        staging_server = os.environ.get('STAGING_SERVER')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
-
-    def tearDown(self) -> None:
-        self.browser.quit()
-
-    def wait_for_row_in_list_table(self, row_text):
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element_by_id('id_list_table')
-                rows = self.browser.find_elements_by_tag_name('tr')
-                self.assertIn(row_text, [row.text for row in rows])
-                return
-            except (AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-
+class NewVisitorTest(FunctionalTest):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edith has heard about a cool new online to-do app.
         # She goes to check out its homepage.
@@ -74,12 +44,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
         edith_list_url = self.browser.current_url
         self.assertRegex(edith_list_url, '/lists/.+')
 
+    def test_multiple_users_can_start_lists_at_different_url(self):
         # Now a new user, Francis, comes along to the site.
         ## We use a new browser session to make sure that no information
         ## of Edith's is coming through from cookies etc.
-        self.browser.quit()
-        self.browser = webdriver.Firefox()
-
         # Francis visits the home page. There is no sign of Edith's
         # list
         self.browser.get(self.live_server_url)
@@ -97,27 +65,12 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # Francis gets his own unique URL
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, 'lists/.+')
-        self.assertNotEqual(francis_list_url, edith_list_url)
 
         # She visits that URL - her to-do list is still there.
+        self.browser.get(francis_list_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Buy milk', page_text)
 
-        # Satisfied, she goes back to sleep.
-
-    def test_layout_and_styling(self):
-        # Edith goes to the homepage
-        self.browser.get(self.live_server_url)
-        self.browser.set_window_size(1024, 768)
-
-        # She notices the input box is nicely centred
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
-
-        # She starts a new list and sees the input is nicely centred there too.
-        inputbox.send_keys('testing')
-        inputbox.send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: testing')
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
 
 if __name__ == "__main__":
     unittest.main()
