@@ -43,8 +43,6 @@ class ListViewTest(TestCase):
         response = self.client.get(f'/lists/{correct_list.id}/')
         self.assertEqual(response.context['list'], correct_list)
 
-
-class NewListTest(TestCase):
     def test_can_save_a_post_request(self):
         self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
@@ -63,18 +61,18 @@ class NewListTest(TestCase):
         other_list = List.objects.create()
         correct_list = List.objects.create()
 
-        self.client.post(f'/lists/{correct_list.id}/add_item', data={'item_text': 'A new list item'})
+        self.client.post(f'/lists/{correct_list.id}/', data={'item_text': 'A new list item'})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
         self.assertEqual(new_item.list, correct_list)
 
-    def test_redirects_to_list_view(self):
+    def test_POST_redirects_to_list_view(self):
         other_list = List.objects.create()
         correct_list = List.objects.create()
 
-        response = self.client.post(f'/lists/{correct_list.id}/add_item', data={'item_text': 'A new list item'})
+        response = self.client.post(f'/lists/{correct_list.id}/', data={'item_text': 'A new list item'})
         self.assertRedirects(response, f'/lists/{correct_list.id}/', 302)
 
     def test_validation_errors_are_sent_back_to_home_page_template(self):
