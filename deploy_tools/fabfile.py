@@ -18,7 +18,7 @@ def deploy():
 
 def _get_latest_source():
     if exists('.git'):
-        run('git fetch')
+        run('git pull')
     else:
         run(f'git clone {REPO_URL} .')
         current_commit = local("git log -n 1 -- format=%H", capture=True)
@@ -46,4 +46,3 @@ def _update_static_files():
 
 def _update_database():
     run('./virtualenv/bin/python manage.py migrate --noinput')
-
