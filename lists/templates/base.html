@@ -13,6 +13,9 @@
             <div class="container-fluid">
                 <a class="navbar-brand">Superlists</a>
                 {% if user.email %}
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a href="#">My lists</a></li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="navbar-text">Logged in as {{ user.email }}</li>
                         <li><a href="{% url 'logout' %}">Log out</a></li>
@@ -43,18 +46,22 @@
             </div>
         {% endif %}
 
-        <div class="col-md-6 col-md-offset-3 jumbotron">
-            <div class="text-center">
-                <h1>{% block header_text %}{% endblock %}</h1>
-                <form method="post" action="{% block form_action %}{% endblock %}">
-                    {{ form.text }}
-                    {% csrf_token %}
-                    {% if form.errors %}
-                        <div class="form-group has-error">
-                             <span class="help-block">{{ form.text.errors }}</span>
-                        </div>
-                    {% endif %}
-                </form>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 jumbotron">
+                <div class="text-center">
+                    <h1>{% block header_text %}{% endblock %}</h1>
+                    {% block list_form %}
+                        <form method="post" action="{% block form_action %}{% endblock %}">
+                            {{ form.text }}
+                            {% csrf_token %}
+                            {% if form.errors %}
+                                <div class="form-group has-error">
+                                     <span class="help-block">{{ form.text.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </form>
+                    {% endblock %}
+                </div>
             </div>
         </div>
 
@@ -65,6 +72,14 @@
                 {% endblock %}
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                {% block extra_content %}
+                {% endblock %}
+            </div>
+        </div>
+
     </div>
 <script src="/static/jquery-3.6.0.min.js"></script>
 <script src="/static/list.js"></script>
