@@ -61,7 +61,7 @@ class MyListTest(FunctionalTest):
         # Under "my lists", her new list appears
         self.browser.find_element_by_link_text('My lists').click()
         self.wait_for(
-            self.browser.find_element_by_link_text(new_list_item)
+            lambda: self.browser.find_element_by_link_text(new_list_item)
         )
         self.browser.find_element_by_link_text(new_list_item).click()
         self.wait_for(
