@@ -50,9 +50,9 @@ class FunctionalTest(StaticLiveServerTestCase):
                 self.browser.switch_to.window(handle)
                 self.take_screenshot()
                 self.dump_html()
-                self.browser.quit()
-                super().tearDown()
         self.browser.quit()
+        super().tearDown()
+    self.browser.quit()
 
     def create_pre_authenticated_session(self, email):
         if self.staging_server:

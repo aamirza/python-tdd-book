@@ -218,3 +218,29 @@ class NewListViewIntegratedTest(TestCase):
         mock_form.is_valid.return_value = False
         new_list(self.request)
         self.assertFalse(mock_form.save.called)
+
+
+class ShareListTest(TestCase):
+    def user1_shares_a_list_with_user2(self):
+        self.user = User.objects.create(email='edith@example.com')
+        self.user2 = User.objects.create(email='onimusha@example.com')
+        self.list_ = List.objects.create(owner=self.user)
+
+        return self.client.post(f'/lists/{self.list_.id}/share/', data={'sharee': self.user2.email}, follow=True)
+
+    def test_post_redirects_to_list_page(self):
+        list_ = List.objects.create()
+
+        response = self.client.post(f'/lists/{list_.id}/share/', data={'email': 'example@abc.com'})
+        self.assertRedirects(response, '/lists/1/')
+
+    def test_sharing_list_adds_user_to_shared_with_list(self):
+        self.user1_shares_a_list_with_user2()
+
+        self.assertIn(self.user2, self.list_.shared_with.all())
+
+    def test_lists_page_shows_who_list_is_shared_with(self):
+        response = self.user1_shares_a_list_with_user2()
+
+        self.assertContains(response, self.user2.email)
+        self.assertContains(response, 'Shared with')
