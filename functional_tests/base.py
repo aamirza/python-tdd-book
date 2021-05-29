@@ -52,7 +52,7 @@ class FunctionalTest(StaticLiveServerTestCase):
                 self.dump_html()
         self.browser.quit()
         super().tearDown()
-    self.browser.quit()
+        self.browser.quit()
 
     def create_pre_authenticated_session(self, email):
         if self.staging_server:
