@@ -3,7 +3,7 @@ import random
 from fabric.contrib.files import append, exists
 from fabric.api import cd, env, local, run
 
-REPO_URL = 'https://github.com/aamirza/python-tdd-book'
+REPO_URL = 'https://github.com/aamirza/superlists'
 
 
 def deploy():
